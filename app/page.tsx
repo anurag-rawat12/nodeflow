@@ -1,7 +1,5 @@
-import prisma from '@/lib/prisma'
-import React from 'react'
-
 const Home = async () => {
+
 
 
   return (
