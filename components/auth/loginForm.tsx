@@ -2,13 +2,14 @@
 import z from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage, Form } from '@/components/ui/form'
+import { FormField, FormItem, FormLabel, FormControl, FormMessage, Form } from '@/components/ui/form'
+import { authClient } from '@/lib/auth-client'
+import { Github } from 'lucide-react'
 
 
 const loginSchema = z.object({
@@ -31,23 +32,38 @@ const LoginForm = () => {
   })
 
   const onSubmit = async (data: loginFormValues) => {
-    console.log(data);
+    const user = await authClient.signIn.email({
+      email: data.email,
+      password: data.password,
+      callbackURL: '/'
+    }, {
+
+      onSuccess: () => {
+        toast.success("Successfully logged in!");
+        router.push('/');
+      },
+
+      onError: (error) => {
+        toast.error(`Login failed: ${error.error.message}`);
+      }
+
+    })
   }
 
   const pending = form.formState.isSubmitting;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black/90 px-4">
+    <div className="min-h-screen flex items-center justify-center  px-4">
       <div className="w-full max-w-md">
-        <Card className="relative border border-white/10 bg-white/5 backdrop-blur-xl shadow-xl">
+        <Card className="relative borderbackdrop-blur-xl shadow-xl">
           {/* subtle glass highlight */}
-          <div className="pointer-events-none absolute inset-0 rounded-xl bg-white/5" />
+          <div className="pointer-events-none absolute inset-0 rounded-xl " />
 
           <CardHeader className="space-y-1 relative">
-            <CardTitle className="text-2xl font-semibold tracking-tight text-center text-white">
+            <CardTitle className="text-2xl font-semibold tracking-tight text-center ">
               Welcome back
             </CardTitle>
-            <CardDescription className="text-center text-white/60">
+            <CardDescription className="text-center ">
               Sign in to your account to continue
             </CardDescription>
           </CardHeader>
@@ -63,7 +79,7 @@ const LoginForm = () => {
                   <Button
                     variant="outline"
                     type="button"
-                    className="w-full bg-white/5 cursor-pointer border-white/10 text-white hover:bg-white/10"
+                    className="w-full cursor-pointer"
                     disabled={pending}
                   >
                     Continue with Google
@@ -72,27 +88,25 @@ const LoginForm = () => {
                   <Button
                     variant="outline"
                     type="button"
-                    className="w-full bg-white/5 cursor-pointer border-white/10 text-white hover:bg-white/10"
+                    className="w-full cursor-pointer"
                     disabled={pending}
                   >
                     Continue with GitHub
                   </Button>
                 </div>
-
                 <div className="space-y-4">
                   <FormField
                     control={form.control}
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-sm text-white/80">
+                        <FormLabel className="text-sm ">
                           Email
                         </FormLabel>
                         <FormControl>
                           <Input
                             type="email"
                             placeholder="anurag@example.com"
-                            className="bg-white/5 border-white/10 text-white placeholder-white/40 focus-visible:ring-white/30"
                             {...field}
                           />
                         </FormControl>
@@ -107,7 +121,7 @@ const LoginForm = () => {
                     render={({ field }) => (
                       <FormItem>
                         <div className="flex items-center justify-between">
-                          <FormLabel className="text-sm text-white/80">
+                          <FormLabel className="text-sm ">
                             Password
                           </FormLabel>
 
@@ -116,7 +130,6 @@ const LoginForm = () => {
                           <Input
                             type="password"
                             placeholder="********"
-                            className="bg-white/5 border-white/10 text-white placeholder-white/40 focus-visible:ring-white/30"
                             {...field}
                           />
                         </FormControl>
@@ -129,18 +142,18 @@ const LoginForm = () => {
                 {/* Submit */}
                 <Button
                   type="submit"
-                  className="w-full bg-white text-black hover:bg-white/90 font-medium"
+                  className="w-full  font-medium"
                   disabled={pending}
                 >
                   {pending ? "Signing in..." : "Sign in"}
                 </Button>
 
                 {/* Footer */}
-                <p className="text-center text-xs text-white/50">
+                <p className="text-center text-xs ">
                   Don&apos;t have an account?{" "}
                   <a
                     href="/register"
-                    className="text-white hover:underline"
+                    className="hover:underline"
                   >
                     Create one
                   </a>
