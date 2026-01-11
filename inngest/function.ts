@@ -1,10 +1,23 @@
 import { inngest } from "./Client";
+import { google } from "@ai-sdk/google";
+import { generateText } from "ai";
 
-export const helloWorld = inngest.createFunction(
-    { id: "hello-world" },
-    { event: "test/hello.world" },
+export const aiResponse = inngest.createFunction(
+    { id: "execute" },
+    { event: "execute" },
     async ({ event, step }) => {
-        await step.sleep("wait-a-moment", "1s");
-        return { message: `Hello ${event.data.email}!` };
-    },
+        await step.sleep("executing", "1s");
+
+        const prompt = event.data?.prompt
+
+        const { steps } = await step.ai.wrap(
+            "gemini-text",
+            generateText, {
+            model: google("gemini-2.5-flash"),
+            prompt
+        }
+        );
+
+        return { steps };
+    }
 );
