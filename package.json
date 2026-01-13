@@ -11,7 +11,10 @@
   "dependencies": {
     "@ai-sdk/google": "^3.0.2",
     "@faker-js/faker": "^10.2.0",
+    "@floating-ui/react": "^0.27.16",
+    "@floating-ui/utils": "^0.2.10",
     "@hookform/resolvers": "^5.2.2",
+    "@paralleldrive/cuid2": "^3.0.6",
     "@prisma/adapter-pg": "^7.1.0",
     "@prisma/client": "^7.2.0",
     "@radix-ui/react-accordion": "^1.2.12",

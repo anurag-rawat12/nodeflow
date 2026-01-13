@@ -1,12 +1,13 @@
 'use client';
 import { useState, useCallback, useEffect } from 'react';
-import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge, Node, Edge, NodeChange, EdgeChange, Connection, Background, Controls, MiniMap } from '@xyflow/react';
+import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge, Node, Edge, NodeChange, EdgeChange, Connection, Background, Controls, MiniMap, Panel } from '@xyflow/react';
 import { useWorkflow } from '@/lib/workflowRouter';
 import NavigationHeader from './navigation';
 import Loader from './Loader';
 
 import '@xyflow/react/dist/style.css';
 import { nodeComponents } from '../node-components';
+import { AddNodeButton } from '../add-node-button';
 
 
 const WorkflowDetails = ({ workflowId }: { workflowId: string }) => {
@@ -21,7 +22,7 @@ const WorkflowDetails = ({ workflowId }: { workflowId: string }) => {
     useEffect(() => {
         if (!data) return;
 
-        setNodes(data.node);   
+        setNodes(data.node);
         setEdges(data.edges);
     }, [data]);
 
@@ -63,6 +64,9 @@ const WorkflowDetails = ({ workflowId }: { workflowId: string }) => {
                         <Background />
                         <Controls />
                         <MiniMap />
+                        <Panel position="top-right">
+                            <AddNodeButton />
+                        </Panel>
                     </ReactFlow>
                 </div>
             </div>
