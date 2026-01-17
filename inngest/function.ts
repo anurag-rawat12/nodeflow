@@ -1,23 +1,32 @@
+import { NonRetriableError } from "inngest";
 import { inngest } from "./Client";
-import { google } from "@ai-sdk/google";
-import { generateText } from "ai";
+import prisma from "@/lib/prisma";
 
-export const aiResponse = inngest.createFunction(
-    { id: "execute" },
-    { event: "execute" },
+export const executeWorkflow = inngest.createFunction(
+    { id: "execute-workflow" },
+    { event: "execute-workflow" },
     async ({ event, step }) => {
-        await step.sleep("executing", "1s");
+        const workflowId = event.data.workflowId;
+        console.log("workflow id:", workflowId);
 
-        const prompt = event.data?.prompt
-
-        const { steps } = await step.ai.wrap(
-            "gemini-text",
-            generateText, {
-            model: google("gemini-2.5-flash"),
-            prompt
+        if (!workflowId) {
+            throw new NonRetriableError("No workflow ID provided");
         }
-        );
 
-        return { steps };
+        const nodes = await step.run("prepare-woklow", async () => {
+            const workflow = await prisma.workflow.findUniqueOrThrow({
+                where: {
+                    id: workflowId
+                },
+                include: {
+                    nodes: true,
+                    connections: true,
+                }
+            })
+
+            return workflow.nodes
+        })
+
+        return { nodes }
     }
 );

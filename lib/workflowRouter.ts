@@ -1,7 +1,6 @@
 'use client'
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { NodeProps } from '@xyflow/react'
 import { toast } from 'sonner'
 
 export function useWorkflow() {

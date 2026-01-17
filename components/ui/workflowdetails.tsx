@@ -1,5 +1,5 @@
 'use client';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge, NodeChange, EdgeChange, Connection, Background, Controls, MiniMap, Panel } from '@xyflow/react';
 import { useWorkflow } from '@/lib/workflowRouter';
 import NavigationHeader from './navigation';
@@ -8,7 +8,8 @@ import Loader from './Loader';
 import '@xyflow/react/dist/style.css';
 import { nodeComponents } from '../node-components';
 import { AddNodeButton } from '../add-node-button';
-
+import { NodeType } from '@/app/generated/prisma/enums';
+import ExecuteButton from '../execute-button';
 
 const WorkflowDetails = ({ workflowId }: { workflowId: string }) => {
 
@@ -25,7 +26,7 @@ const WorkflowDetails = ({ workflowId }: { workflowId: string }) => {
         setNodes(data.node);
         setEdges(data.edges);
     }, [data]);
-    
+
 
     const [loading, setLoading] = useState(false);
 
@@ -41,6 +42,10 @@ const WorkflowDetails = ({ workflowId }: { workflowId: string }) => {
         (params: Connection) => setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot)),
         [],
     );
+
+    const hasManualTriggers = useMemo(() => {
+        return nodes.some((node: any) => node.type === NodeType.MANUAL_TRIGGER);
+    }, [nodes])
 
     return (
         isLoading ? <Loader /> :
@@ -76,6 +81,11 @@ const WorkflowDetails = ({ workflowId }: { workflowId: string }) => {
                         <Panel position="top-right">
                             <AddNodeButton />
                         </Panel>
+                        {hasManualTriggers && (
+                            <Panel position="bottom-center">
+                                <ExecuteButton workflowId={workflowId} />
+                            </Panel>)
+                        }
                     </ReactFlow>
                 </div>
             </div>
