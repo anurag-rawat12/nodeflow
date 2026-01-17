@@ -1,111 +1,138 @@
-import Link from "next/link"
+'use client'
+
+import { useEffect, useState } from 'react'
+import Link from 'next/link'
+import { File, Loader, LoaderIcon, Pencil, Save } from 'lucide-react'
 
 import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { Button } from "./button"
-import { MoreVerticalIcon, Pencil, TrashIcon } from "lucide-react"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu"
-import { Input } from "./input"
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover"
-import { useState } from "react"
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb'
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card'
+import { Input } from '@/components/ui/input'
+import { Button } from './button'
 
-const NavigationHeader = ({ root, data, onSave }: { root: string, data: any, onSave: (v: string) => void }) => {
-    const [value, setValue] = useState(data)
-    const [open, setOpen] = useState(false)
+interface NavigationHeaderProps {
+  root: string
+  data: string
+  onSave: (value: string) => void
+  onWorkflowSave?: () => void
+  loading: boolean
+}
 
+const NavigationHeader = ({
+  root,
+  data,
+  onSave,
+  onWorkflowSave,
+  loading
+}: NavigationHeaderProps) => {
+  const [isEditing, setIsEditing] = useState(false)
+  const [value, setValue] = useState(data)
 
+  // Keep local state in sync if parent updates name
+  useEffect(() => {
+    setValue(data)
+  }, [data])
 
-    return (
-        <div className="ml-2 mr-2 flex items-center justify-between">
-            <Breadcrumb>
-                <BreadcrumbList>
-                    <BreadcrumbItem>
-                        <BreadcrumbLink asChild>
-                            <Link
-                                className="text-[15px]"
-                                href={`/${root}`}>{root}</Link>
-                        </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                        <BreadcrumbPage
-                            className="text-[15px]"
-                        >{data}</BreadcrumbPage>
-                    </BreadcrumbItem>
-                </BreadcrumbList>
-            </Breadcrumb>
+  return (
+    <header className="mx-2 flex justify-between h-12 items-center">
+      <Breadcrumb>
+        <BreadcrumbList>
+          {/* Root */}
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link
+                href={`/${root}`}
+                className="text-sm font-medium text-muted-foreground hover:text-foreground"
+              >
+                {root}
+              </Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
 
-            <Popover open={open} onOpenChange={setOpen}>
-                <PopoverTrigger asChild>
-                    <Button
-                        variant="default"
-                        size="sm"
-                        onClick={(e) => e.stopPropagation()}
-                        className="gap-2"
-                    >
-                        <Pencil className="h-4 w-4" />
-                        Edit
-                    </Button>
-                </PopoverTrigger>
+          <BreadcrumbSeparator />
 
-                <PopoverContent
-                    align="end"
-                    sideOffset={8}
-                    onClick={(e) => e.stopPropagation()}
-                    className="w-72 rounded-lg border bg-background p-4 shadow-md"
+          {/* Editable Workflow Name */}
+          <BreadcrumbItem>
+            <HoverCard openDelay={150} closeDelay={100}>
+              <HoverCardTrigger asChild>
+                <div
+                  className="group flex items-center gap-1"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setIsEditing(true)
+                  }}
                 >
-                    <div className="flex flex-col gap-3">
-                        <p className="text-sm font-medium">Edit workflow name</p>
+                  {!isEditing ? (
+                    <>
+                      <BreadcrumbPage className="text-sm font-medium">
+                        {data}
+                      </BreadcrumbPage>
 
-                        <Input
-                            value={value}
-                            onChange={(e) => {
-                                setValue(e.target.value)
-                            }}
-                            placeholder="Workflow name"
-                        />
+                      <Pencil className="h-3.5 w-3.5 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+                    </>
+                  ) : (
+                    <Input
+                      value={value}
+                      autoFocus
+                      className="h-7 w-[200px]"
+                      onChange={(e) => setValue(e.target.value)}
+                      onBlur={() => {
+                        setValue(data)
+                        setIsEditing(false)
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          if (value.trim()) {
+                            onSave(value.trim())
+                          }
+                          setIsEditing(false)
+                        }
 
+                        if (e.key === 'Escape') {
+                          setValue(data)
+                          setIsEditing(false)
+                        }
+                      }}
+                    />
+                  )}
+                </div>
+              </HoverCardTrigger>
 
-                        <div className="flex justify-end gap-2">
-                            {/* CANCEL */}
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => {
-                                    setValue(data)
-                                    setOpen(false)
-                                }}
-                            >
-                                Cancel
-                            </Button>
+              {!isEditing && (
+                <HoverCardContent
+                  align="start"
+                  side="bottom"
+                  className="w-auto px-2 py-1 text-xs text-muted-foreground"
+                >
+                  Click to rename workflow
+                </HoverCardContent>
+              )}
+            </HoverCard>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
 
-                            {/* SAVE */}
-                            <Button
-                                size="sm"
-                                onClick={() => {
-                                    onSave(value)
-                                    setOpen(false)
-                                }}
-                            >
-                                Save
-                            </Button>
-                        </div>
-                    </div>
-                </PopoverContent>
-            </Popover>
-        </div>
-    )
+      <Button
+        variant="default"
+        size="sm"
+        onClick={onWorkflowSave}
+        disabled={loading}
+        className='flex justify-between items-center mr-4 gap-2'
+      >
+        <Save />
+        {
+          loading ? <LoaderIcon className="h-5 w-5 animate-spin text-white animation-duration-[2.5s]" /> : 'Save'
+        }
+      </Button>
 
+    </header >
+  )
 }
 
 export default NavigationHeader

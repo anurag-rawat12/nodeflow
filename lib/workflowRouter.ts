@@ -1,6 +1,7 @@
 'use client'
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { NodeProps } from '@xyflow/react'
 import { toast } from 'sonner'
 
 export function useWorkflow() {
@@ -18,7 +19,7 @@ export function useWorkflow() {
       if (!res.ok) throw new Error('Failed to create workflow')
       return res.json()
     },
-    onSuccess: (workflow) => { 
+    onSuccess: (workflow) => {
       queryClient.invalidateQueries({ queryKey: ['workflows'] })
       toast.success(`Workflow ${workflow.name} created`)
     },
@@ -40,7 +41,49 @@ export function useWorkflow() {
     },
   })
 
+  type Node = {
+    id: string
+    type: string
+    data?: Record<string, any>
+    position: { x: number, y: number }
+  }
+  type Edge = {
+    id: string
+    source: string
+    target: string
+    sourceHandle?: string | null
+    targetHandle?: string | null
+
+  }
   // UPDATE
+  const updateWorkflow = useMutation({
+    mutationFn: async ({
+      workflowId,
+      nodes,
+      edges,
+    }: {
+      workflowId: string
+      nodes: Node[]
+      edges: Edge[]
+    }) => {
+      const res = await fetch(`/api/workflows/data/${workflowId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nodes, edges
+        }),
+      })
+
+      if (!res.ok) throw new Error('Failed to update workflow')
+      return res.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['workflows'] })
+      toast.success('Workflow saved successfully')
+    },
+  })
+
+  // UPDATE NAME
   const updateNameWorkflow = useMutation({
     mutationFn: async ({
       name,
@@ -94,11 +137,31 @@ export function useWorkflow() {
     },
   })
 
+  // DELETE NODE
+  const deleteNode = useMutation({
+    mutationFn: async (nodeId: string) => {
+
+      const res = await fetch(`/api/nodes/${nodeId}`, {
+        method: 'DELETE',
+      })
+
+      if (!res.ok) throw new Error('Failed to delete node')
+      return null;
+
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['workflows'] })
+      toast.success('Node deleted successfully')
+    },
+  })
+
   return {
     createWorkflow,
     removeWorkflow,
     updateNameWorkflow,
     getOneWorkflow,
     getAllWorkflows,
+    updateWorkflow,
+    deleteNode
   }
 }

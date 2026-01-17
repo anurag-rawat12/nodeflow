@@ -100,12 +100,12 @@ export function NodeSelector({
 
             if (hasManualTrigger) {
                 toast.error("A workflow can only have one manual trigger.")
-                return
+                return 
             }
         }
 
         setNodes((nodes) => {
-            const hasInitialNode = nodes.some(n => n.type === NodeType.MANUAL_TRIGGER)
+            const hasInitialNode = nodes.some(n => n.type === NodeType.INITIAL)
             const centerX = window.innerWidth / 2
             const centerY = window.innerHeight / 2
 

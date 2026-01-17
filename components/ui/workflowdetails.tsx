@@ -1,6 +1,6 @@
 'use client';
 import { useState, useCallback, useEffect } from 'react';
-import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge, Node, Edge, NodeChange, EdgeChange, Connection, Background, Controls, MiniMap, Panel } from '@xyflow/react';
+import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge, NodeChange, EdgeChange, Connection, Background, Controls, MiniMap, Panel } from '@xyflow/react';
 import { useWorkflow } from '@/lib/workflowRouter';
 import NavigationHeader from './navigation';
 import Loader from './Loader';
@@ -12,12 +12,12 @@ import { AddNodeButton } from '../add-node-button';
 
 const WorkflowDetails = ({ workflowId }: { workflowId: string }) => {
 
-    const { getOneWorkflow, updateNameWorkflow } = useWorkflow();
+    const { getOneWorkflow, updateNameWorkflow, updateWorkflow } = useWorkflow();
     const { data, isLoading } = getOneWorkflow(workflowId);
 
 
-    const [nodes, setNodes] = useState<Node[]>([]);
-    const [edges, setEdges] = useState<Edge[]>([]);
+    const [nodes, setNodes] = useState([]);
+    const [edges, setEdges] = useState([]);
 
     useEffect(() => {
         if (!data) return;
@@ -25,7 +25,9 @@ const WorkflowDetails = ({ workflowId }: { workflowId: string }) => {
         setNodes(data.node);
         setEdges(data.edges);
     }, [data]);
+    
 
+    const [loading, setLoading] = useState(false);
 
     const onNodesChange = useCallback(
         (changes: NodeChange[]) => setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)),
@@ -48,7 +50,14 @@ const WorkflowDetails = ({ workflowId }: { workflowId: string }) => {
                         updateNameWorkflow.mutate({ name: newName, workflowId });
                     }}
                     root="workflow"
-                    data={data.name}
+                    data={data.workflow.name}
+                    onWorkflowSave={() => {
+                        setLoading(true);
+                        updateWorkflow.mutate({ workflowId, nodes, edges }, {
+                            onSettled: () => setLoading(false),
+                        });
+                    }}
+                    loading={loading}
                 />
 
                 <div className="flex-1">
