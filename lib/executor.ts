@@ -293,6 +293,18 @@ export const geminiExecutor = async ({
             })
         )
 
+        await publish(
+            outputChannel().output({
+                nodeId: nodeId,
+                data: {
+                    ...context,
+                    [data.variableName]: {
+                        response: text
+                    }
+                }
+            })
+        )
+
         return {
             ...context,
             [data.variableName]: {

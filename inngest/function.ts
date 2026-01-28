@@ -15,7 +15,7 @@ import { grokChannel } from "./channels/grok";
 export const executeWorkflow = inngest.createFunction(
     {
         id: "execute-workflow",
-        retries: 0,
+        retries: 3,
         onFailure: async ({ event, error }) => {
             const inngestEventId = event.data.event.id
             return await prisma.execution.updateMany({

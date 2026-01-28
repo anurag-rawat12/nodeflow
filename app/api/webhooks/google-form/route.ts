@@ -34,7 +34,7 @@ export const POST = async (req: NextRequest) => {
             }
         })
 
-        return res;
+        return NextResponse.json(res);
 
     } catch (error) {
         return NextResponse.json({

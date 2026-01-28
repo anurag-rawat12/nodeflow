@@ -61,8 +61,7 @@ export function OutputDialog({
                     <Textarea
                         value={JSON.stringify(nodeOutputs[nodeId] || "no output", null, 2)}
                         readOnly
-                        className=" h-[400px] resize-none font-mono text-xsleading-relaxedbg-muted/40 overflow-auto
-            "
+                        className=" h-[400px] resize-none font-mono text-xs leading-relaxed bg-muted/40 overflow-auto"
                     />
                 </div>
             </DialogContent>

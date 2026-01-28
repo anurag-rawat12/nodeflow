@@ -5,4 +5,5 @@ import { realtimeMiddleware } from "@inngest/realtime/middleware";
 export const inngest = new Inngest({
     id: "nodeflow",
     middleware: [realtimeMiddleware()],
+    
 }); 
