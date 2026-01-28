@@ -6,7 +6,6 @@ import { Edge, Node } from "@xyflow/react";
 export async function DELETE(req: Request, { params }: { params: Promise<{ workflowId: string }> }) {
     const session = await requireAuth();
     const { workflowId } = await params;
-    console.log("workflowId:", workflowId);
 
     if (!workflowId) {
         return NextResponse.json(

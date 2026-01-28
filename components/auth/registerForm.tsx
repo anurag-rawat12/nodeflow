@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { FormField, FormItem, FormLabel, FormControl, FormMessage, Form } from '@/components/ui/form'
 import { authClient } from '@/lib/auth-client'
+import Image from 'next/image'
 
 
 const registerSchema = z.object({
@@ -33,7 +34,6 @@ const RegisterForm = () => {
     })
 
     const onSubmit = async (data: registerFormValues) => {
-        console.log(data);
         const user = await authClient.signUp.email(
             {
                 name: data.name,
@@ -84,7 +84,26 @@ const RegisterForm = () => {
                                         type="button"
                                         className="w-full cursor-pointer"
                                         disabled={pending}
+                                        onClick={
+                                            async () => {
+                                                await authClient.signIn.social({
+                                                    provider: "google",
+                                                },
+                                                    {
+                                                        onSuccess: () => {
+                                                            toast.success("Successfully logged in!");
+                                                            router.push('/');
+                                                        },
+
+                                                        onError: (error) => {
+                                                            toast.error(`Login failed: ${error.error.message}`);
+                                                        }
+                                                    }
+                                                )
+                                            }}
                                     >
+                                        <Image src='/images/google.svg' alt="Google logo" width={20} height={20} className="mr-2" />
+
                                         Continue with Google
                                     </Button>
 
@@ -93,7 +112,27 @@ const RegisterForm = () => {
                                         type="button"
                                         className="w-full cursor-pointer"
                                         disabled={pending}
+                                        onClick={
+                                            async () => {
+                                                await authClient.signIn.social({
+                                                    provider: "github",
+                                                },
+                                                    {
+                                                        onSuccess: () => {
+                                                            toast.success("Successfully logged in!");
+                                                            router.push('/');
+                                                        },
+
+                                                        onError: (error) => {
+                                                            toast.error(`Login failed: ${error.error.message}`);
+                                                        }
+                                                    }
+                                                )
+                                            }}
+
                                     >
+                                        <Image src='/images/github.svg' alt="GitHub logo" width={20} height={20} className="mr-2" />
+
                                         Continue with GitHub
                                     </Button>
                                 </div>

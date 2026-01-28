@@ -12,7 +12,6 @@ const ExecuteButton = ({
 
     const handleExecute = async () => {
         const res = await execute({ workflowId })
-        console.log(res)
         if (res) {
             return toast.success(`Workflow ${res.name} executed`)
         }

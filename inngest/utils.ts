@@ -1,4 +1,5 @@
-import { Connection, node } from "@/app/generated/prisma/client";
+import { Connection, node, NodeType } from "@/app/generated/prisma/client";
+import { anthropicExecutor, geminiExecutor, googleFormTriggerExecutor, grokExecutor, httpTriggerExecutor, manualTriggerExecutor, openAIExecutor } from "@/lib/executor";
 import toposort from "toposort";
 
 export const topologicalSort = (
@@ -27,6 +28,7 @@ export const topologicalSort = (
         }
     }
 
+
     let sortedNodeIds: string[];
     try {
         sortedNodeIds = toposort(edges);
@@ -43,3 +45,23 @@ export const topologicalSort = (
     return sortedNodeIds.map((id) => nodeMap.get(id)!)
 
 }
+
+export const executorRegistry: any = {
+    [NodeType.MANUAL_TRIGGER]: manualTriggerExecutor,
+    [NodeType.HTTP_REQUEST]: httpTriggerExecutor,
+    [NodeType.GOOGLE_FORM_TRIGGER]: googleFormTriggerExecutor,
+    [NodeType.GEMINI]: geminiExecutor,
+    [NodeType.ANTHROPIC]: anthropicExecutor,
+    [NodeType.OPENAI]: openAIExecutor,
+    [NodeType.GROK]: grokExecutor,
+};
+
+export const getExecutor = (type: NodeType) => {
+    const executor = executorRegistry[type];
+
+    if (!executor) {
+        throw new Error(`No executor found for node type: ${type}`);
+    }
+
+    return executor;
+};

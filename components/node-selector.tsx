@@ -15,6 +15,7 @@ import { Separator } from "./ui/separator";
 import { Position, useReactFlow } from "@xyflow/react";
 import { toast } from "sonner";
 import { createId } from "@paralleldrive/cuid2";
+import Image from "next/image";
 
 export type NodeTypeOptions = {
     type: NodeType;
@@ -30,6 +31,12 @@ const triggerNodes: NodeTypeOptions[] = [
         description: "Starts the workflow manually",
         icon: MousePointerIcon,
     },
+    {
+        type: NodeType.GOOGLE_FORM_TRIGGER,
+        label: "Google Form Trigger",
+        description: "Starts the workflow from a Google Form submission",
+        icon: '/images/googleform.svg',
+    },
 ];
 
 const executionNodes: NodeTypeOptions[] = [
@@ -38,6 +45,30 @@ const executionNodes: NodeTypeOptions[] = [
         label: "HTTP Request",
         description: "Makes an HTTP request",
         icon: GlobeIcon,
+    },
+    {
+        type: NodeType.GEMINI,
+        label: "Gemini",
+        description: "Makes an Gemini API call",
+        icon: "/images/gemini.svg",
+    },
+    {
+        type: NodeType.ANTHROPIC,
+        label: "Anthropic",
+        description: "Makes an Anthropic API call",
+        icon: "/images/anthropic.svg",
+    },
+    {
+        type: NodeType.OPENAI,
+        label: "OpenAI",
+        description: "Makes an OpenAI API call",
+        icon: "/images/openai.svg",
+    },
+    {
+        type: NodeType.GROK,
+        label: "Grok",
+        description: "Makes a Grok API call",
+        icon: "/images/grok.svg",
     },
 ];
 
@@ -65,7 +96,7 @@ function NodeOption({
         >
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground group-hover:text-primary">
                 {typeof Icon === "string" ? (
-                    <img src={Icon} alt={node.label} className="h-5 w-5" />
+                    <Image width={16} height={16} src={Icon} alt={node.label} className="h-5 w-5" />
                 ) : (
                     <Icon className="h-5 w-5" />
                 )}
@@ -100,7 +131,7 @@ export function NodeSelector({
 
             if (hasManualTrigger) {
                 toast.error("A workflow can only have one manual trigger.")
-                return 
+                return
             }
         }
 

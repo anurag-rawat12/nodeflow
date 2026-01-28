@@ -8,16 +8,17 @@ datasource db {
 }
 
 model User {
-  id            String     @id
+  id            String       @id
   name          String
   email         String
-  emailVerified Boolean    @default(false)
+  emailVerified Boolean      @default(false)
   image         String?
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
   sessions      Session[]
   accounts      Account[]
   workflows     Workflow[]
+  credentials   Credential[]
 
   @@unique([email])
   @@map("user")
@@ -71,6 +72,28 @@ model Verification {
   @@map("verification")
 }
 
+enum CredentialType {
+  OPENAI
+  ANTHROPIC
+  GROK
+  GEMINI
+}
+
+model Credential {
+  id String @id @default(cuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type      CredentialType
+  key       String
+  value     String
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  Node node[]
+}
+
 model Workflow {
   id        String   @id @default(cuid())
   name      String
@@ -80,24 +103,31 @@ model Workflow {
   userID String
   user   User   @relation(fields: [userID], references: [id], onDelete: Cascade)
 
-  nodes node[]
+  nodes       node[]
   connections Connection[]
+  executions  Execution[]
 }
 
 enum NodeType {
   INITIAL
   MANUAL_TRIGGER
   HTTP_REQUEST
+  GOOGLE_FORM_TRIGGER
+  ANTHROPIC
+  GEMINI
+  OPENAI
+  GROK
 }
+
 model node {
   id         String   @id @default(cuid())
   workflowId String
   workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
 
-  name       String
-  type       NodeType
+  name     String
+  type     NodeType
   position Json
-  data     Json @default("{}")
+  data     Json     @default("{}")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -105,6 +135,8 @@ model node {
   connectionsFrom Connection[] @relation("ConnectionFromNode")
   connectionsTo   Connection[] @relation("ConnectionToNode")
 
+  credentialId String?
+  credential   Credential? @relation(fields: [credentialId], references: [id])
 }
 
 model Connection {
@@ -113,15 +145,41 @@ model Connection {
   workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
 
   fromNodeId String
-  fromNode   node     @relation("ConnectionFromNode", fields: [fromNodeId], references: [id], onDelete: Cascade)  
- 
-  toNodeId   String
-  toNode     node     @relation("ConnectionToNode", fields: [toNodeId], references: [id], onDelete: Cascade)
+  fromNode   node   @relation("ConnectionFromNode", fields: [fromNodeId], references: [id], onDelete: Cascade)
 
-  fromOutput String @default("main")
-  toInput    String @default("main")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  toNodeId String
+  toNode   node   @relation("ConnectionToNode", fields: [toNodeId], references: [id], onDelete: Cascade)
+
+  fromOutput String   @default("main")
+  toInput    String   @default("main")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   @@unique([fromNodeId, fromOutput, toNodeId, toInput])
+}
+
+enum ExecutionStatus {
+  PENDING
+  RUNNING
+  SUCCESS
+  FAILED
+}
+
+model Execution {
+  id         String   @id @default(cuid())
+  workflowId String
+  workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+
+  error String? @db.Text
+
+  startedAt  DateTime  @default(now())
+  finishedAt DateTime?
+
+  status ExecutionStatus @default(RUNNING)
+
+  inngestEventId String @unique
+  output         Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

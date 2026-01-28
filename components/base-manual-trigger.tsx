@@ -67,7 +67,6 @@ export const BaseTriggerNode = memo(
           <BaseNode
             onDoubleClick={onDoubleClick}
             className="relative rounded-l-2xl group"
-            
           >
             <BaseNodeContent>
               {typeof Icon === 'string' ? (
@@ -96,5 +95,3 @@ export const BaseTriggerNode = memo(
     )
   }
 )
-
-BaseTriggerNode.displayName = 'BaseTriggerNode'

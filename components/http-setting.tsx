@@ -15,7 +15,7 @@ import {
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { cn } from "@/lib/utils";
-import { Link2 } from "lucide-react";
+import { FilePen, Link2 } from "lucide-react";
 
 import {
     Form,
@@ -29,6 +29,7 @@ import {
 
 
 const httpSettingSchema = z.object({
+    variableName: z.string().min(1, "Name is required"),
     method: z.enum(["GET", "POST", "PUT", "PATCH", "DELETE"]),
     endpoint: z.string().min(1, "Endpoint is required"),
     body: z.string().optional(),
@@ -52,6 +53,7 @@ const HttpSetting = ({
     open,
     onOpenChange,
     onSubmit,
+    variableName,
     endpoint,
     method,
     body,
@@ -59,6 +61,7 @@ const HttpSetting = ({
     open: boolean;
     onOpenChange: (open: boolean) => void;
     onSubmit?: (data: HttpSettingForm) => void;
+    variableName?: string;
     endpoint?: string;
     method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
     body?: string;
@@ -66,9 +69,10 @@ const HttpSetting = ({
     const form = useForm<HttpSettingForm>({
         resolver: zodResolver(httpSettingSchema),
         defaultValues: {
-            method: "GET",
-            endpoint: "",
-            body: "",
+            variableName: variableName || "",
+            method: method || "GET",
+            endpoint: endpoint || "",
+            body: body || "",
         },
     });
 
@@ -77,7 +81,7 @@ const HttpSetting = ({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[520px]">
+            <DialogContent className="sm:max-w-130">
                 <DialogHeader>
                     <DialogTitle>HTTP Request Settings</DialogTitle>
                 </DialogHeader>
@@ -87,6 +91,39 @@ const HttpSetting = ({
                         onSubmit={form.handleSubmit(onSubmit)}
                         className="space-y-6"
                     >
+                        {/* name */}
+                        <FormField
+                            control={form.control}
+                            name="variableName"
+                            render={({ field }) => (
+                                <FormItem className="space-y-2">
+                                    <FormLabel className="text-sm font-medium">
+                                        Variable Name
+                                    </FormLabel>
+
+                                    <FormControl>
+                                        <div className="relative">
+                                            <FilePen className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+
+                                            <Input
+                                                className="pl-9"
+                                                placeholder="Enter workflow name"
+                                                {...field}
+                                            />
+                                        </div>
+                                    </FormControl>
+
+                                    <FormDescription className="text-xs">
+                                        use this name to reference the response in other nodes:
+                                        {` {{${form.watch("variableName")}.httpResponse.data}}`}
+                                    </FormDescription>
+
+                                    <FormMessage className="text-xs" />
+                                </FormItem>
+                            )}
+                        />
+
+
                         {/* METHOD */}
                         <FormField
                             control={form.control}

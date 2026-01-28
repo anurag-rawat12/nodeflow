@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { FormField, FormItem, FormLabel, FormControl, FormMessage, Form } from '@/components/ui/form'
 import { authClient } from '@/lib/auth-client'
 import { Github } from 'lucide-react'
+import Image from 'next/image'
 
 
 const loginSchema = z.object({
@@ -81,7 +82,25 @@ const LoginForm = () => {
                     type="button"
                     className="w-full cursor-pointer"
                     disabled={pending}
+                    onClick={
+                      async () => {
+                        await authClient.signIn.social({
+                          provider: "google",
+                        },
+                          {
+                            onSuccess: () => {
+                              toast.success("Successfully logged in!");
+                              router.push('/');
+                            },
+
+                            onError: (error) => {
+                              toast.error(`Login failed: ${error.error.message}`);
+                            }
+                          }
+                        )
+                      }}
                   >
+                    <Image src='/images/google.svg' alt="Google logo" width={20} height={20} className="mr-2" />
                     Continue with Google
                   </Button>
 
@@ -90,7 +109,25 @@ const LoginForm = () => {
                     type="button"
                     className="w-full cursor-pointer"
                     disabled={pending}
+                    onClick={
+                      async () => {
+                        await authClient.signIn.social({
+                          provider: "github",
+                        },
+                          {
+                            onSuccess: () => {
+                              toast.success("Successfully logged in!");
+                              router.push('/');
+                            },
+
+                            onError: (error) => {
+                              toast.error(`Login failed: ${error.error.message}`);
+                            }
+                          }
+                        )
+                      }}
                   >
+                    <Image src='/images/github.svg' alt="GitHub logo" width={20} height={20} className="mr-2" />
                     Continue with GitHub
                   </Button>
                 </div>
