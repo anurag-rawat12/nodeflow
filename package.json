@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "ngork:dev": "ngrok http --url=densimetric-appeasable-carson.ngrok-free.dev 3000",
+    "postinstall": "prisma generate",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
