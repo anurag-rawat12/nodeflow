@@ -21,7 +21,7 @@ import { Label } from "@/components/ui/label"
 import { useCredential } from "@/lib/credentialRouter"
 import z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { CredentialType } from "@/app/generated/prisma/enums"
+import { CredentialType } from '@prisma/client'
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { useForm } from "react-hook-form"
 import {

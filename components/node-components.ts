@@ -1,4 +1,4 @@
-import { NodeType } from "@/app/generated/prisma/enums";
+import { NodeType } from '@prisma/client'
 import { InitialNode } from "./ui/initial-node";
 import { NodeTypes } from "@xyflow/react";
 import { HttpNode } from "./http-node";

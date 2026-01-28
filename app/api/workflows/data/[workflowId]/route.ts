@@ -1,4 +1,4 @@
-import { NodeType } from '@/app/generated/prisma/enums'
+import { NodeType } from '@prisma/client'
 import { requireAuth } from '@/lib/auth-utils'
 import prisma from '@/lib/prisma'
 import { NextResponse } from 'next/server'

@@ -8,7 +8,7 @@ import Loader from './Loader';
 import '@xyflow/react/dist/style.css';
 import { nodeComponents } from '../node-components';
 import { AddNodeButton } from '../add-node-button';
-import { NodeType } from '@/app/generated/prisma/enums';
+import { NodeType } from '@prisma/client'
 import ExecuteButton from '../execute-button';
 
 const WorkflowDetails = ({ workflowId }: { workflowId: string }) => {

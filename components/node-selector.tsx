@@ -2,7 +2,7 @@
 
 import React, { useCallback } from "react";
 import { GlobeIcon, MousePointerIcon } from "lucide-react";
-import { NodeType } from "@/app/generated/prisma/enums";
+import { NodeType } from '@prisma/client'
 import {
     Sheet,
     SheetContent,

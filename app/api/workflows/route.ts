@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import prisma from "@/lib/prisma"
 import { requireAuth } from "@/lib/auth-utils"
-import { NodeType } from "@/app/generated/prisma/enums";
+import { NodeType } from '@prisma/client'
 
 export async function POST(req: Request) {
   const session = await requireAuth();

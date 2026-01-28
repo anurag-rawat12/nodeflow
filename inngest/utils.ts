@@ -1,4 +1,4 @@
-import { Connection, node, NodeType } from "@/app/generated/prisma/client";
+import { Connection, node, NodeType } from '@prisma/client'
 import { anthropicExecutor, geminiExecutor, googleFormTriggerExecutor, grokExecutor, httpTriggerExecutor, manualTriggerExecutor, openAIExecutor } from "@/lib/executor";
 import toposort from "toposort";
 
