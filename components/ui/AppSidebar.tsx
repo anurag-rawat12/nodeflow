@@ -97,39 +97,6 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter className="border-t px-3 py-4">
         <SidebarMenu className="space-y-1">
-          {/* Upgrade to Pro */}
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              className="
-          flex items-center gap-3 rounded-md px-4 py-2.5
-          transition-colors duration-200
-          hover:bg-primary/15
-        "
-            >
-              <a href="/upgrade" className="flex items-center gap-3 w-full">
-                <Sparkles className="h-5 w-5 text-primary" />
-                <span className="text-sm font-medium">Upgrade to Pro</span>
-              </a>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-
-          {/* Billing Portal */}
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              className="
-          flex items-center gap-3 rounded-md px-4 py-2.5
-          transition-colors duration-200
-          hover:bg-muted
-        "
-            >
-              <a href="/billing" className="flex items-center gap-3 w-full">
-                <CreditCard className="h-5 w-5" />
-                <span className="text-sm font-medium">Billing Portal</span>
-              </a>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
 
           {/* Sign out */}
           <SidebarMenuItem>
